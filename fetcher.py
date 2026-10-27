@@ -1,10 +1,5 @@
 import asyncio
-from contextlib import contextmanager
 import logging
-import logging.handlers
-import queue
-import sys
-
 import aiohttp
 
 
@@ -73,43 +68,18 @@ async def fetch_all_posts():
         return clean_posts
 
 
-@contextmanager
-def setup_logging():
-    log_queue = queue.Queue(-1)
-
-    stream_handler = logging.StreamHandler(sys.stdout)
-    file_handler = logging.FileHandler("results.log", encoding="utf-8")
-
-    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-
-    stream_handler.setFormatter(formatter)
-    file_handler.setFormatter(formatter)
-
-    listener = logging.handlers.QueueListener(log_queue, stream_handler, file_handler)
-
-    queue_handler = logging.handlers.QueueHandler(log_queue)
-
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
-    root_logger.addHandler(queue_handler)
-
-    listener.start()
-
-    try:
-        yield
-    finally:
-        listener.stop()
-        root_logger.removeHandler(queue_handler)
-        queue_handler.close()
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s: %(message)s",
+)
 
 
 async def main():
-    with setup_logging():
-        logging.info("Приложение запущено")
+    logging.info("Приложение запущено")
 
-        result = await fetch_all_posts()
+    result = await fetch_all_posts()
 
-        return result
+    return result
 
 
 if __name__ == "__main__":

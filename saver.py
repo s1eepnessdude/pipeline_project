@@ -5,7 +5,17 @@ from threading import Lock, Event
 import analyzer
 import time
 
+COLUMN_WIDTHS = (6, 40, 16, 32)
+HEADERS = ("id", "title", "complexity_score", "text_hash")
+
 shared_lock, shared_queue, shared_event, shared_counter = None, None, None, None
+
+def format_row(values):
+    cells = [
+        str(value)[:width].ljust(width)
+        for value, width in zip(values, COLUMN_WIDTHS)
+    ]
+    return "| " + " | ".join(cells) + " |"
 
 def init_worker(lock, queue, event, counter):
     global shared_lock, shared_queue, shared_event, shared_counter
@@ -18,7 +28,7 @@ def save_post(post_data):
     time.sleep(0.05)
     with shared_lock:
         with open("results.log", "a") as file:
-            file.write("|".join(post_data) + "\n")
+            file.write(format_row(post_data) + "\n")
         shared_counter[0] += 1
 
 def worker():
@@ -59,6 +69,14 @@ def main():
     for post in posts:
         queue.put(post)
     event.set()
+
+
+    border = "+-" + "-+-".join("-" * width for width in COLUMN_WIDTHS) + "-+"
+
+    with open("results.log", "w", encoding="utf-8") as file:
+        file.write(border + "\n")
+        file.write(format_row(HEADERS) + "\n")
+        file.write(border + "\n")
 
 
     with ThreadPoolExecutor(max_workers=5, initializer=init_worker, initargs=(lock, queue, event, counter)) as executor:
