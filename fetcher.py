@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import contextmanager
 import logging
 import logging.handlers
 import queue
@@ -72,6 +73,7 @@ async def fetch_all_posts():
         return clean_posts
 
 
+@contextmanager
 def setup_logging():
     log_queue = queue.Queue(-1)
 
@@ -91,7 +93,14 @@ def setup_logging():
     root_logger.setLevel(logging.INFO)
     root_logger.addHandler(queue_handler)
 
-    return listener
+    listener.start()
+
+    try:
+        yield
+    finally:
+        listener.stop()
+        root_logger.removeHandler(queue_handler)
+        queue_handler.close()
 
 
 async def main():
