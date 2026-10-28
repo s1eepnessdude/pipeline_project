@@ -1,2 +1,10 @@
 results.log
 .ruff_cache
+.__pycache__
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+__pycache__/analyzer.cpython-314.pyc
+__pycache__/fetcher.cpython-314.pyc
+fetcher.log
