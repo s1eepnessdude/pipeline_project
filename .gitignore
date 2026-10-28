@@ -1,10 +1,32 @@
-results.log
-.ruff_cache
-.__pycache__
+
+# Python bytecode
 __pycache__/
 *.py[cod]
+*$py.class
+
+# Virtual environments
 .venv/
 venv/
-__pycache__/analyzer.cpython-314.pyc
-__pycache__/fetcher.cpython-314.pyc
+env/
+
+# Type checkers and test tools
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Generated logs
+results.log
 fetcher.log
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
